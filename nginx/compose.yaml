@@ -8,6 +8,7 @@ services:
       - frontend
     labels:
      - traefik.enable=true
+     - traefik.docker.network=frontend
      - traefik.http.routers.nginx.tls=true
      - traefik.http.routers.nginx.tls.certresolver=cloudflare
      - traefik.http.routers.nginx.entrypoints=websecure

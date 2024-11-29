@@ -52,6 +52,7 @@ services:
       - frontend
     labels:
      - traefik.enable=true
+     - traefik.docker.network=frontend
      - traefik.http.routers.authentik.tls=true
      - traefik.http.routers.authentik.tls.certresolver=cloudflare
      - traefik.http.routers.authentik.entrypoints=websecure
