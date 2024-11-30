@@ -1,0 +1,29 @@
+---
+services:
+  commfy-ui:
+    build: .
+    container_name: comfy-ui
+    restart: unless-stopped
+    networks:
+      - frontend
+    labels:
+     - traefik.enable=true
+     - traefik.docker.network=frontend
+     - traefik.http.routers.comfy-ui.tls=true
+     - traefik.http.routers.comfy-ui.tls.certresolver=cloudflare
+     - traefik.http.routers.comfy-ui.entrypoints=websecure
+     - traefik.http.routers.comfy-ui.middlewares=authentik@file
+     - traefik.http.routers.comfy-ui.rule=Host(`sd.home.webcap.site`)
+     - traefik.http.services.comfy-ui.loadbalancer.server.port=8188
+    volumes:
+      - ./models:/opt/ComfyUI/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+              - driver: nvidia
+                device_ids: ['0']
+                capabilities: [compute, utility]
+networks:
+  frontend:
+    external: true
