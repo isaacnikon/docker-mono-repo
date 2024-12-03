@@ -1,0 +1,38 @@
+---
+services:
+  crate-db:
+    image: crate:latest
+    container_name: crate-db
+    restart: unless-stopped
+    networks:
+      - frontend
+    volumes:
+      - ./data:/data
+    ports:
+      - 5432:5432
+    environment:
+      - CRATE_HEAP_SIZE=16g
+    command: ["crate",
+              "-Ccluster.name=crate-docker-cluster",
+              "-Cnode.name=crate-db",
+              "-Cnode.data=true",
+              "-Cnetwork.host=_site_",
+              "-Cgateway.expected_data_nodes=1",
+              "-Cgateway.recover_after_data_nodes=1"]
+    labels:
+     - traefik.enable=true
+     - traefik.docker.network=frontend
+     - traefik.http.routers.crate-db.tls=true
+     - traefik.http.routers.crate-db.tls.certresolver=cloudflare
+     - traefik.http.routers.crate-db.entrypoints=websecure
+     - traefik.http.routers.crate-db.rule=Host(`crate.home.webcap.site`)
+     - traefik.http.services.crate-db.loadbalancer.server.port=4200
+     - traefik.http.routers.crate-db.middlewares=authentik@file
+    #  - traefik.tcp.routers.crate-db-pg.tls=true
+    #  - traefik.tcp.routers.crate-db-pg.tls.certresolver=cloudflare
+    #  - traefik.tcp.routers.crate-db-pg.entrypoints=websecure
+    #  - traefik.tcp.routers.crate-db-pg.rule=Host(`crate-pg.home.webcap.site`)
+    #  - traefik.tcp.services.crate-db-pg.loadbalancer.server.port=5432
+networks:
+  frontend:
+    external: true
