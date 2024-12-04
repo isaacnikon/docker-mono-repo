@@ -31,6 +31,8 @@ entryPoints:
     # <--
   websecure:
     address: :443
+  other:
+    address: :5432
 
 # -- Configure your CertificateResolver here...
 certificatesResolvers:

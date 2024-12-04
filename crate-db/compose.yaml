@@ -8,8 +8,6 @@ services:
       - frontend
     volumes:
       - ./data:/data
-    ports:
-      - 5432:5432
     environment:
       - CRATE_HEAP_SIZE=16g
     command: ["crate",
@@ -28,11 +26,12 @@ services:
      - traefik.http.routers.crate-db.rule=Host(`crate.home.webcap.site`)
      - traefik.http.services.crate-db.loadbalancer.server.port=4200
      - traefik.http.routers.crate-db.middlewares=authentik@file
-    #  - traefik.tcp.routers.crate-db-pg.tls=true
-    #  - traefik.tcp.routers.crate-db-pg.tls.certresolver=cloudflare
-    #  - traefik.tcp.routers.crate-db-pg.entrypoints=websecure
-    #  - traefik.tcp.routers.crate-db-pg.rule=Host(`crate-pg.home.webcap.site`)
-    #  - traefik.tcp.services.crate-db-pg.loadbalancer.server.port=5432
+     - traefik.tcp.routers.crate-db-pg.tls=true
+    #  - traefik.tcp.routers.crate-db-pg.tls.passthrough=true
+     - traefik.tcp.routers.crate-db-pg.tls.certresolver=cloudflare
+     - traefik.tcp.routers.crate-db-pg.entrypoints=other
+     - traefik.tcp.routers.crate-db-pg.rule=HostSNI(`crate-pg.home.webcap.site`)
+     - traefik.tcp.services.crate-db-pg.loadbalancer.server.port=5432
 networks:
   frontend:
     external: true
