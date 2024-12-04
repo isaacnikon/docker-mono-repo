@@ -1,0 +1,27 @@
+---
+services:
+  redis-server:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbit-mq-server
+    restart: unless-stopped
+    volumes:
+        - .docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - .docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - frontend
+    labels:
+     - traefik.enable=true
+     - traefik.docker.network=frontend
+     - traefik.tcp.routers.rabbit-mq-server.tls=true
+     - traefik.tcp.routers.rabbit-mq-server.tls.certresolver=cloudflare
+     - traefik.tcp.routers.rabbit-mq-server.entrypoints=other
+     - traefik.tcp.routers.rabbit-mq-server.rule=HostSNI(`rabbit-mq.home.webcap.site`)
+     - traefik.tcp.services.rabbit-mq-server.loadbalancer.server.port=5672
+     - traefik.http.routers.rabbit-mq.tls=true
+     - traefik.http.routers.rabbit-mq.tls.certresolver=cloudflare
+     - traefik.http.routers.rabbit-mq.entrypoints=websecure
+     - traefik.http.routers.rabbit-mq.rule=Host(`rabbit-mq.home.webcap.site`)
+     - traefik.http.services.rabbit-mq.loadbalancer.server.port=15672
+networks:
+  frontend:
+    external: true
