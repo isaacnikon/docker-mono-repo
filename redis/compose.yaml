@@ -1,0 +1,21 @@
+---
+services:
+  redis-server:
+    image: redis:latest
+    container_name: redis-server
+    restart: unless-stopped
+    networks:
+      - frontend
+    labels:
+     - traefik.enable=true
+     - traefik.docker.network=frontend
+     - traefik.tcp.routers.redis-server.tls=true
+    #  - traefik.tcp.routers.redis-server.tls.passthrough=true
+     - traefik.tcp.routers.redis-server.tls.certresolver=cloudflare
+     - traefik.tcp.routers.redis-server.entrypoints=other
+     - traefik.tcp.routers.redis-server.rule=HostSNI(`redis.home.webcap.site`)
+     - traefik.tcp.services.redis-server.loadbalancer.server.port=6379
+
+networks:
+  frontend:
+    external: true
