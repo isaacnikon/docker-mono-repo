@@ -17,6 +17,7 @@ services:
      - traefik.http.services.comfy-ui.loadbalancer.server.port=8188
     volumes:
       - ./models:/opt/ComfyUI/models
+      - ./inputs:/opt/ComfyUI/input
     deploy:
       resources:
         reservations:
